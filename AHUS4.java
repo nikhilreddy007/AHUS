@@ -631,6 +631,7 @@ public class AHUS4 {
 
 		if(peuP < minUtility)
 			return;
+		// System.out.println(peuP);
 
 		for(Integer item : promisingItems) {
 			ArrayList<Integer> itemPattern = new ArrayList<Integer>();
@@ -651,45 +652,55 @@ public class AHUS4 {
 				}
 
 				if(canIConcat && databaseIConcatList.contains(item)) {
+
+					Integer extPeu = 0;
+
 					for(int i : database.keySet()) {
 						if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
 							continue;
 						}
 
-						if (getRSU(prefixPattern, item, 'i', i, peuMap.get(i)) >= minUtility) {
-							calcIUListPEUandASU(prefixPattern, item, 'i');
+						extPeu += getRSU(prefixPattern, item, 'i', i, peuMap.get(i));
+					}
 
-							ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
-							extPattern.add(item);
-							
-							if(mapASU.get(extPattern) >= minUtility) {
-								highUtilityPatterns.add(extPattern);
-							}
+					if (extPeu >= minUtility) {
+						calcIUListPEUandASU(prefixPattern, item, 'i');
 
-							findHUSPs(extPattern, mapASU.get(extPattern));
+						ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
+						extPattern.add(item);
+						
+						if(mapASU.get(extPattern) >= minUtility) {
+							highUtilityPatterns.add(extPattern);
 						}
+
+						findHUSPs(extPattern, mapASU.get(extPattern));
 					}
 				}
 
 				if(databaseSConcatList.contains(item)) {
+
+					Integer extPeu = 0;
+
 					for(int i : database.keySet()) {
 						if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
 							continue;
 						}
 
-						if (getRSU(prefixPattern, item, 's', i, peuMap.get(i)) >= minUtility) {
-							calcIUListPEUandASU(prefixPattern, item, 's');
+						extPeu += getRSU(prefixPattern, item, 's', i, peuMap.get(i));
+					}
 
-							ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
-							extPattern.add(0);
-							extPattern.add(item);
-							
-							if(mapASU.get(extPattern) >= minUtility) {
-								highUtilityPatterns.add(extPattern);
-							}
-							
-							findHUSPs(extPattern, mapASU.get(extPattern));
+					if (extPeu >= minUtility) {
+						calcIUListPEUandASU(prefixPattern, item, 's');
+
+						ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
+						extPattern.add(0);
+						extPattern.add(item);
+						
+						if(mapASU.get(extPattern) >= minUtility) {
+							highUtilityPatterns.add(extPattern);
 						}
+						
+						findHUSPs(extPattern, mapASU.get(extPattern));
 					}
 				}
 			}
