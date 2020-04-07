@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.Map.Entry;
+import java.time.Duration;
+import java.time.Instant;
 
 public class AHUS4 {
+	Instant start;
+	Instant finish;
 	private int minUtility = 0;
 	private ArrayList<ArrayList<Integer>> highUtilityPatterns = new ArrayList<ArrayList<Integer>>();
 
@@ -23,13 +27,15 @@ public class AHUS4 {
 	public void runAlgorithm(String inputPath, String outputPath, int minUtility) throws IOException {
 		this.minUtility = minUtility;
 
+		start = Instant.now(); // starting timer
+
 		HashSet<Integer> initialPromisingItems = getPromisingItems(inputPath);
 		HashMap<Integer, ArrayList<ArrayList<Integer>>> initialPrunedDatabase = pruneDatabase(initialPromisingItems, inputPath);
 
 		promisingItems = getPromisingItems(initialPrunedDatabase);
 		database = pruneDatabase(promisingItems, initialPrunedDatabase);
 
-		printDatabase(database);
+		//printDatabase(database);
 
 		calcDatabaseConcatLists(promisingItems, database);
 
@@ -43,6 +49,8 @@ public class AHUS4 {
 			}
 			findHUSPs(pattern, mapASU.get(pattern));
 		}
+
+		finish = Instant.now();
 
 		writeResultsToFile(outputPath);
 
@@ -651,8 +659,9 @@ public class AHUS4 {
 	    	for(ArrayList<Integer> pattern : highUtilityPatterns) {
 	    		for(Integer item : pattern) {
 	    			fos.write(Integer.toString(item).getBytes());
-	    			fos.write("\t".getBytes());
+	    			fos.write(" ".getBytes());
 	    		}
+	    		fos.write(("   #UTIL: " + mapASU.get(pattern)).getBytes());
 				fos.write(lineSeparator.getBytes());
 	    	}
 			fos.flush();
@@ -663,12 +672,15 @@ public class AHUS4 {
 
 
 	private void printHighUtilityPatterns() {
+		long timeElapsed = (Duration.between(start, finish).toMillis());
 		System.out.println("HIGH UTILITY PATTERNS:");
 		
 		for(ArrayList<Integer> pattern : highUtilityPatterns) {
 			System.out.println(pattern + "\tutility: " + mapASU.get(pattern));
 		}
+		
+		System.out.println("\nHIGH UTILITY PATTERN COUNT: " + highUtilityPatterns.size());
 
-		System.out.println("HIGH UTILITY PATTERN COUNT: " + highUtilityPatterns.size());
+		System.out.println("\nExecution Time: " + timeElapsed + " ms");
 	}
 }

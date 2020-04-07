@@ -9,9 +9,13 @@ public class Main {
 
 		int minUtil = 40;
 
+		System.out.println("=============  HUSPM ALGORITHM - STARTS ==========");
+
 		AHUS4 ahus = new AHUS4();
 
 		ahus.runAlgorithm(inputPath, outputPath, minUtil);
+		
+		System.out.println("==================================================");
 	}
 
 	private static String fileToPath(String filename) throws UnsupportedEncodingException {
