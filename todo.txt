@@ -19,6 +19,8 @@ calc new iulists from prev pattern iulist
 calc promising items in second read
 calc peu in husp function
 
+<<<<<<< HEAD
+=======
 1	5	0	1	2	3	0	1	4	5	0
 
 
@@ -70,6 +72,7 @@ calc peu in husp function
 	// 	_i.add(item);
 	// 	return asuP + mapPEU.get(_i);
 	// }
+>>>>>>> 7d597d0760f84d31e088a3fe39a3baa137e40c55
 
 5[5] -1 3[8] 6[1] -1 2[10] -1 -2 SUtility:24
 1[4] 5[6] -1 1[2] 2[5] 3[8] -1 1[4] 4[9] 5[3] -1 -2 SUtility:41

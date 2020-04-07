@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
+
 public class Main {
 	public static void main(String[] args) throws IOException {
 		String inputPath = fileToPath("database.txt");

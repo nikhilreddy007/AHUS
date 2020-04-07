@@ -10,8 +10,9 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class AHUS4 {
-	Instant start;
-	Instant finish;
+	
+	Instant start, finish;
+
 	private int minUtility = 0;
 	private ArrayList<ArrayList<Integer>> highUtilityPatterns = new ArrayList<ArrayList<Integer>>();
 
@@ -30,12 +31,17 @@ public class AHUS4 {
 		start = Instant.now(); // starting timer
 
 		HashSet<Integer> initialPromisingItems = getPromisingItems(inputPath);
+
 		HashMap<Integer, ArrayList<ArrayList<Integer>>> initialPrunedDatabase = pruneDatabase(initialPromisingItems, inputPath);
+
+		// printDatabase(initialPrunedDatabase);
 
 		promisingItems = getPromisingItems(initialPrunedDatabase);
 		database = pruneDatabase(promisingItems, initialPrunedDatabase);
+		// promisingItems = initialPromisingItems;
+		// database = initialPrunedDatabase;
 
-		//printDatabase(database);
+		// printDatabase(database);
 
 		calcDatabaseConcatLists(promisingItems, database);
 
@@ -44,6 +50,7 @@ public class AHUS4 {
 		for(int item : promisingItems) {
 			ArrayList<Integer> pattern = new ArrayList<Integer>();
 			pattern.add(item);
+
 			if(mapASU.get(pattern) >= minUtility) {
 				highUtilityPatterns.add(pattern);
 			}
@@ -169,12 +176,21 @@ public class AHUS4 {
 
 						ulistList.add(utility);
 
-						int remUtility = remSequenceUtility - utility;
-						rlistList.add(remUtility);
-						remSequenceUtility -= utility;
 					} else {
+
 						seqList.add(0);
 						ulistList.add(0);
+					}
+				}
+				for(int j=0; j < seqList.size(); j++) {
+					if(seqList.get(j) != 0) {
+
+						int utility = ulistList.get(j);
+						
+						rlistList.add(remSequenceUtility - utility);
+						remSequenceUtility -= utility;
+					} else {
+
 						rlistList.add(0);
 					}
 				}
@@ -272,15 +288,27 @@ public class AHUS4 {
 
 					ulistList.add(utility);
 
-					int remUtility = remSequenceUtility - utility;
-					rlistList.add(remUtility);
-					remSequenceUtility -= utility;
+					// int remUtility = remSequenceUtility - utility;
+					// rlistList.add(remSequenceUtility - utility);
+					// remSequenceUtility -= utility;
 				} else {
 					seqList.add(0);
 					ulistList.add(0);
-					rlistList.add(0);
+					// rlistList.add(0);
 				}
 			}
+			for(int j=0; j < seqList.size(); j++) {
+					if(seqList.get(j) != 0) {
+
+						int utility = ulistList.get(j);
+						
+						rlistList.add(remSequenceUtility - utility);
+						remSequenceUtility -= utility;
+					} else {
+
+						rlistList.add(0);
+					}
+				}
 
 			if(seqList.size() == 1) {
 				continue;
@@ -452,10 +480,17 @@ public class AHUS4 {
 			ArrayList<ArrayList<Integer>> extIUList = new ArrayList<ArrayList<Integer>>();
 
 			for(int itemIndex : itemIUList.get(0)) {
-				int rightBound = -1;
+
+				int rightBound = -1, leftBound = 0;
 
 				if(concatType == 'i') {
 					rightBound = itemIndex-1;
+					for(int j = itemIndex-1; j >= 0; j--) {
+						if(sequence.get(0).get(j) == 0) {
+							leftBound = j+1;
+							break;
+						}
+					}
 				} else {
 					for(int j = itemIndex-1; j >= 0; j--) {
 						if(sequence.get(0).get(j) == 0) {
@@ -472,10 +507,11 @@ public class AHUS4 {
 				int max = 0;
 				ArrayList<Integer> prefixIndexList = prefixIUList.get(0);
 				for(int prefixIndex = 0; prefixIndex < prefixIndexList.size(); prefixIndex++) {
-					if(prefixIndexList.get(prefixIndex) <= rightBound) {
+
+					if(prefixIndexList.get(prefixIndex) >= leftBound && prefixIndexList.get(prefixIndex) <= rightBound) {
 						max = (max < prefixIUList.get(1).get(prefixIndex)) ? prefixIUList.get(1).get(prefixIndex) : max;
 					} else {
-						break;
+						// break;
 					}
 				}
 
@@ -507,6 +543,9 @@ public class AHUS4 {
 
 
 	private int getRSU(ArrayList<Integer> pattern, Integer item, char concatType, Integer seqNum, Integer prefixPeu) {
+
+		// System.out.println(pattern + "\t" + item + "\t" + concatType + "\t" + seqNum);
+
 		ArrayList<Integer> prefixPattern = new ArrayList<Integer>(pattern);
 
 		ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
@@ -532,8 +571,11 @@ public class AHUS4 {
 						break;
 					}
 				}
-				if(itemsetEnded || extPatternExists)
+
+				// if(itemsetEnded || extPatternExists)
+				if(extPatternExists)
 					break;
+			
 			}
 		} else {
 			int minIndex = Integer.MAX_VALUE;
@@ -558,6 +600,8 @@ public class AHUS4 {
 			}
 
 		}
+
+		// System.out.println(extPatternExists + "\t" + prefixPeu);
 
 		if(extPatternExists) {
 			return prefixPeu;
@@ -594,7 +638,8 @@ public class AHUS4 {
 
 			if(_asuP + mapPEU.get(itemPattern) >= minUtility) {
 				boolean canIConcat = true;
-				for(int i =prefixPattern.size()-1; i >= 0; i--) {
+
+				for(int i = prefixPattern.size()-1; i >= 0; i--) {
 					if(prefixPattern.get(i).equals(item)) {
 						canIConcat = false;
 						break;
@@ -610,17 +655,16 @@ public class AHUS4 {
 						if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
 							continue;
 						}
-						// System.out.println();
+
 						if (getRSU(prefixPattern, item, 'i', i, peuMap.get(i)) >= minUtility) {
 							calcIUListPEUandASU(prefixPattern, item, 'i');
 
 							ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
 							extPattern.add(item);
-
-							// System.out.println(extPattern + "\tin\t" + i + "\twith\t" + 'i');
 							
-							if(mapASU.get(extPattern) >= minUtility)
+							if(mapASU.get(extPattern) >= minUtility) {
 								highUtilityPatterns.add(extPattern);
+							}
 
 							findHUSPs(extPattern, mapASU.get(extPattern));
 						}
@@ -640,8 +684,9 @@ public class AHUS4 {
 							extPattern.add(0);
 							extPattern.add(item);
 							
-							if(mapASU.get(extPattern) >= minUtility)
+							if(mapASU.get(extPattern) >= minUtility) {
 								highUtilityPatterns.add(extPattern);
+							}
 							
 							findHUSPs(extPattern, mapASU.get(extPattern));
 						}
@@ -673,12 +718,13 @@ public class AHUS4 {
 
 	private void printHighUtilityPatterns() {
 		long timeElapsed = (Duration.between(start, finish).toMillis());
+
 		System.out.println("HIGH UTILITY PATTERNS:");
 		
 		for(ArrayList<Integer> pattern : highUtilityPatterns) {
 			System.out.println(pattern + "\tutility: " + mapASU.get(pattern));
 		}
-		
+
 		System.out.println("\nHIGH UTILITY PATTERN COUNT: " + highUtilityPatterns.size());
 
 		System.out.println("\nExecution Time: " + timeElapsed + " ms");
