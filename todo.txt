@@ -1,0 +1,28 @@
+scan whole database to store iconcat and sconcat items
+check rsu in advance and add to concat list
+
+euu(p') = u(p) + u(i) where p is subset of s
+peu(p,s) is peu of first occurence of p
+
+calculate peu of all promising items in advance and refer to it in euu
+while creating databaseiconcat and sconcat list, check if i and s list has all promising items after every sequence
+merge getIUList and getPEU methods
+pass asu(p') in recursive function
+
+convert items to string again
+prune low swu items second time
+store data in array of three arraylists
+change iuList map format
+add peu to iuList table
+calc new iulists from prev pattern iulist
+
+calc promising items in second read
+calc peu in husp function
+
+
+5[5] -1 3[8] 6[1] -1 2[10] -1 -2 SUtility:24
+1[4] 5[6] -1 1[2] 2[5] 3[8] -1 1[4] 4[9] 5[3] -1 -2 SUtility:41
+3[4] -1 1[12] 4[9] 5[2] -1 -2 SUtility:27
+2[10] 5[2] -1 1[14] 4[9] -1 1[8] 2[5] 5[2] -1 -2 SUtility:50
+2[10] 5[3] -1 1[12] 5[3] -1 1[4] 2[5] -1 -2 SUtility:37
+7[1] -1 -2 SUtility:1
