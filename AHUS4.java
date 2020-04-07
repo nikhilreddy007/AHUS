@@ -45,7 +45,7 @@ public class AHUS4 {
 
 		// printDatabase(database);
 
-		calcDatabaseConcatLists(promisingItems, database);
+		// calcDatabaseConcatLists(promisingItems, database);
 
 		calcIUListPEUandASU(promisingItems, database);
 
@@ -657,7 +657,7 @@ public class AHUS4 {
 					}
 				}
 
-				if(canIConcat && databaseIConcatList.contains(item)) {
+				if(canIConcat) { // && databaseIConcatList.contains(item)) {
 
 					Integer extPeu = 0;
 
@@ -668,6 +668,8 @@ public class AHUS4 {
 
 						extPeu += getRSU(prefixPattern, item, 'i', i, peuMap.get(i));
 					}
+
+					// System.out.println(prefixPattern + "\t" + item + "\t" + "i" + "\t" + extPeu);
 
 					if (extPeu >= minUtility) {
 						calcIUListPEUandASU(prefixPattern, item, 'i');
@@ -683,7 +685,7 @@ public class AHUS4 {
 					}
 				}
 
-				if(databaseSConcatList.contains(item)) {
+				// if(databaseSConcatList.contains(item)) {
 
 					Integer extPeu = 0;
 
@@ -694,6 +696,8 @@ public class AHUS4 {
 
 						extPeu += getRSU(prefixPattern, item, 's', i, peuMap.get(i));
 					}
+
+					// System.out.println(prefixPattern + "\t" + item + "\t" + "s" + "\t" + extPeu);
 
 					if (extPeu >= minUtility) {
 						calcIUListPEUandASU(prefixPattern, item, 's');
@@ -708,7 +712,7 @@ public class AHUS4 {
 						
 						findHUSPs(extPattern, mapASU.get(extPattern));
 					}
-				}
+				// }
 			}
 		}
 	}
