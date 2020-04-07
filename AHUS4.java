@@ -11,7 +11,9 @@ import java.time.Instant;
 
 public class AHUS4 {
 	
-	Instant start, finish;
+	public Instant start, finish;
+	public long timeElapsed;
+	public int totalPatterns;
 
 	private int minUtility = 0;
 	private ArrayList<ArrayList<Integer>> highUtilityPatterns = new ArrayList<ArrayList<Integer>>();
@@ -58,6 +60,10 @@ public class AHUS4 {
 		}
 
 		finish = Instant.now();
+		
+		timeElapsed = (Duration.between(start, finish).toMillis());
+
+		totalPatterns = highUtilityPatterns.size();
 
 		writeResultsToFile(outputPath);
 
@@ -728,7 +734,6 @@ public class AHUS4 {
 
 
 	private void printHighUtilityPatterns() {
-		long timeElapsed = (Duration.between(start, finish).toMillis());
 
 		System.out.println("HIGH UTILITY PATTERNS:");
 		
@@ -736,8 +741,8 @@ public class AHUS4 {
 			System.out.println(pattern + "\tutility: " + mapASU.get(pattern));
 		}
 
-		System.out.println("\nHIGH UTILITY PATTERN COUNT: " + highUtilityPatterns.size());
+		//System.out.println("\nHIGH UTILITY PATTERN COUNT: " + highUtilityPatterns.size());
 
-		System.out.println("\nExecution Time: " + timeElapsed + " ms");
+		//System.out.println("\nExecution Time: " + timeElapsed + " ms");
 	}
 }
