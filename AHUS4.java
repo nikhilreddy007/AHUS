@@ -9,8 +9,9 @@ import java.util.Map.Entry;
 import java.time.Duration;
 import java.time.Instant;
 
+
 public class AHUS4 {
-	
+
 	public Instant start, finish;
 	public long timeElapsed;
 	public int totalPatterns;
@@ -30,16 +31,17 @@ public class AHUS4 {
 	public void runAlgorithm(String inputPath, String outputPath, int minUtility) throws IOException {
 		this.minUtility = minUtility;
 
-		start = Instant.now(); // starting timer
+		// start = Instant.now(); // starting timer
 
 		HashSet<Integer> initialPromisingItems = getPromisingItems(inputPath);
-
 		HashMap<Integer, ArrayList<ArrayList<Integer>>> initialPrunedDatabase = pruneDatabase(initialPromisingItems, inputPath);
 
 		// printDatabase(initialPrunedDatabase);
 
 		promisingItems = getPromisingItems(initialPrunedDatabase);
 		database = pruneDatabase(promisingItems, initialPrunedDatabase);
+
+		start = Instant.now();
 		// promisingItems = initialPromisingItems;
 		// database = initialPrunedDatabase;
 
@@ -48,6 +50,7 @@ public class AHUS4 {
 		// calcDatabaseConcatLists(promisingItems, database);
 
 		calcIUListPEUandASU(promisingItems, database);
+	
 
 		for(int item : promisingItems) {
 			ArrayList<Integer> pattern = new ArrayList<Integer>();
@@ -67,7 +70,7 @@ public class AHUS4 {
 
 		writeResultsToFile(outputPath);
 
-		printHighUtilityPatterns();
+		// printHighUtilityPatterns();
 	}
 
 
@@ -620,13 +623,15 @@ public class AHUS4 {
 		ArrayList<Integer> prefixPattern = new ArrayList<Integer>(pattern);
 		HashMap<Integer, Integer> peuMap = new HashMap<Integer, Integer>();
 
+		// PEU PRUNING
+
 		Integer peuP = 0;
 		for(int seq : database.keySet()) {
 			if(!mapIUList.get(seq).keySet().contains(prefixPattern)) {
 				continue;
 			}
 
-			ArrayList<Integer> peuList =  mapIUList.get(seq).get(prefixPattern).get(2);
+			ArrayList<Integer> peuList = mapIUList.get(seq).get(prefixPattern).get(2);
 			int max = 0;
 			for(int peu : peuList) {
 				max = (peu > max) ? peu : max;
@@ -643,77 +648,84 @@ public class AHUS4 {
 			ArrayList<Integer> itemPattern = new ArrayList<Integer>();
 			itemPattern.add(item);
 
-			if(_asuP + mapPEU.get(itemPattern) >= minUtility) {
-				boolean canIConcat = true;
+			// EUU PRUNING
 
-				for(int i = prefixPattern.size()-1; i >= 0; i--) {
-					if(prefixPattern.get(i).equals(item)) {
-						canIConcat = false;
-						break;
-					}
-					if(prefixPattern.get(i).equals(0)) {
-						canIConcat = true;
-						break;
-					}
+			if(_asuP + mapPEU.get(itemPattern) < minUtility)
+				continue;
+
+			boolean canIConcat = true;
+
+			for(int i = prefixPattern.size()-1; i >= 0; i--) {
+				if(prefixPattern.get(i).equals(item)) {
+					canIConcat = false;
+					break;
 				}
-
-				if(canIConcat) { // && databaseIConcatList.contains(item)) {
-
-					Integer extPeu = 0;
-
-					for(int i : database.keySet()) {
-						if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
-							continue;
-						}
-
-						extPeu += getRSU(prefixPattern, item, 'i', i, peuMap.get(i));
-					}
-
-					// System.out.println(prefixPattern + "\t" + item + "\t" + "i" + "\t" + extPeu);
-
-					if (extPeu >= minUtility) {
-						calcIUListPEUandASU(prefixPattern, item, 'i');
-
-						ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
-						extPattern.add(item);
-						
-						if(mapASU.get(extPattern) >= minUtility) {
-							highUtilityPatterns.add(extPattern);
-						}
-
-						findHUSPs(extPattern, mapASU.get(extPattern));
-					}
+				if(prefixPattern.get(i).equals(0)) {
+					canIConcat = true;
+					break;
 				}
-
-				// if(databaseSConcatList.contains(item)) {
-
-					Integer extPeu = 0;
-
-					for(int i : database.keySet()) {
-						if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
-							continue;
-						}
-
-						extPeu += getRSU(prefixPattern, item, 's', i, peuMap.get(i));
-					}
-
-					// System.out.println(prefixPattern + "\t" + item + "\t" + "s" + "\t" + extPeu);
-
-					if (extPeu >= minUtility) {
-						calcIUListPEUandASU(prefixPattern, item, 's');
-
-						ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
-						extPattern.add(0);
-						extPattern.add(item);
-						
-						if(mapASU.get(extPattern) >= minUtility) {
-							highUtilityPatterns.add(extPattern);
-						}
-						
-						findHUSPs(extPattern, mapASU.get(extPattern));
-					}
-				// }
 			}
+
+			if(canIConcat) { // && databaseIConcatList.contains(item)) {
+
+				Integer rsu = 0;
+
+				// RSU PRUNING
+
+				for(int i : database.keySet()) {
+					if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
+						continue;
+					}
+
+					rsu += getRSU(prefixPattern, item, 'i', i, peuMap.get(i));
+				}
+
+				// System.out.println(prefixPattern + "\t" + item + "\t" + "i" + "\t" + extPeu);
+
+				if (rsu >= minUtility) {
+					calcIUListPEUandASU(prefixPattern, item, 'i');
+
+					ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
+					extPattern.add(item);
+					
+					if(mapASU.get(extPattern) >= minUtility) {
+						highUtilityPatterns.add(extPattern);
+					}
+
+					findHUSPs(extPattern, mapASU.get(extPattern));
+				}
+			}
+
+			// if(databaseSConcatList.contains(item)) {
+
+				Integer rsu = 0;
+
+				// RSU PRUNING
+
+				for(int i : database.keySet()) {
+					if(!mapIUList.get(i).keySet().contains(prefixPattern) || !mapIUList.get(i).keySet().contains(itemPattern)) {
+						continue;
+					}
+
+					rsu += getRSU(prefixPattern, item, 's', i, peuMap.get(i));
+				}
+
+				// System.out.println(prefixPattern + "\t" + item + "\t" + "s" + "\t" + extPeu);
+
+				if (rsu >= minUtility) {
+					calcIUListPEUandASU(prefixPattern, item, 's');
+
+					ArrayList<Integer> extPattern = new ArrayList<Integer>(prefixPattern);
+					extPattern.add(0);
+					extPattern.add(item);
+					
+					if(mapASU.get(extPattern) >= minUtility) {
+						highUtilityPatterns.add(extPattern);
+					}
+					
+					findHUSPs(extPattern, mapASU.get(extPattern));
+				}
+				// }
 		}
 	}
 

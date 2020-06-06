@@ -19,60 +19,6 @@ calc new iulists from prev pattern iulist
 calc promising items in second read
 calc peu in husp function
 
-<<<<<<< HEAD
-=======
-1	5	0	1	2	3	0	1	4	5	0
-
-
-
-
-
-	HashMap<Integer, Integer[][]> iuList = new HashMap<Integer, Integer[][]>();
-	if(pattern.size() == 1) {
-		for(int i = 0; i < promisingSequenceCount; i++) {
-			ArrayList<Integer> index = new ArrayList<Integer>();
-			ArrayList<Integer> utility = new ArrayList<Integer>();
-			for(int j = 0; j < database.get(i)[0].length; j++) {
-				if(database.get(i)[0][j] == _pattern.get(0)) {
-					index.add(j);
-					utility.add(database.get(i)[1][j]);
-				}
-			}
-			Integer[][] iuListInSeq = new Integer[2][index.size()];
-			for(int k = 0; k < index.size(); k++) {
-				iuListInSeq[0][k] = index.get(k);
-				iuListInSeq[1][k] = utility.get(k);
-			}
-			iuList.put(i, iuListInSeq);
-		}
-		mapIUList.put(_pattern, iuList);
-	} else {
-		for(int i = 0; i < promisingSequenceCount; i++) {
-
-		}
-	}
-
-
-	// private int getEUU(ArrayList<Integer> pattern, Integer item) {
-	// 	ArrayList<Integer> _pattern = new ArrayList<Integer>(pattern);
-
-	// 	Map<Integer, Integer[][]> iuListP = calcParamsForPattern(_pattern);
-	// 	int asuP = 0;
-	// 	for(int i = 0; i < iuListP.size(); i++) {
-	// 		Integer[] utilListP = iuListP.get(i)[1];
-	// 		// System.out.println(iuListInSeq[1].length);
-	// 		int max = 0;
-	// 		for(int j = 0; j < utilListP.length; j++)
-	// 			if(utilListP[j] > max)
-	// 				max = utilListP[j];
-	// 		asuP += max;
-	// 	}
-
-	// 	ArrayList<Integer> _i = new ArrayList<Integer>();
-	// 	_i.add(item);
-	// 	return asuP + mapPEU.get(_i);
-	// }
->>>>>>> 7d597d0760f84d31e088a3fe39a3baa137e40c55
 
 5[5] -1 3[8] 6[1] -1 2[10] -1 -2 SUtility:24
 1[4] 5[6] -1 1[2] 2[5] 3[8] -1 1[4] 4[9] 5[3] -1 -2 SUtility:41

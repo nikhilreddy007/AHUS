@@ -1,0 +1,90 @@
+1. SWU pruning stage-1:
+Whole database is scanned to identify all the items whose SWU is less than threshold
+
+These items are then removed from the dataset as any pattern which includes one or more of these items can not be a high-utility pattern
+
+This is because, As the SWU is the sum of sequence utilities of all the sequences that contain a specified item, If that value is less than threshold, The sum of any of the patterns(which include the item) that belong to that sequences also can not be more than the threshold. It will be less or equal to the SWU, But not more than that.
+
+
+2. SWU pruning stage-2:
+After the first step, one might think that we have gotten rid of all the unpromising items, But that might not be the case always.
+
+As during the first step, We have calculated the SWUs of all items before pruning the dataset, and applied our pruning logic keeping this is memory.
+
+But after removing some items, we must also observe that the SWUs of some or all of the items are now changed(reduced). And so, In reference to our new dataset, we might have some more unpromising items based on the new SWU values. SO we apply this process one more time
+
+After removing the unpromising items once, The SWUs of all the remaining items are recalculated from the new dataset.
+
+Any remaining low SWU items are again pruned to further reduce the search space.
+
+
+3. Construct IU lists of all singleton patterns:
+Now we calculate Index-Utility list, PEU list and ASU of all the one-item patterns.
+
+This data is used in the future to expand upon the existing patterns to extract all the HUSPs.
+
+
+4. Checking ASU:
+If the ASU of the picked pattern is greater than or equal to threshold, Add that to the HUSPs list
+
+Keep in mind that, these one-item patterns, although are just singleton sets can still be promising patterns that yield high utilities. So we should check for the ASU of these patterns too.
+
+
+For all one-item patterns, do the following:
+
+5. PEU pruning:
+This is the second type of pruning that is done as soon as a new pattern is generated(from extension of previous patterns)
+
+First calculate the PEU of the given pattern for whole dataset.
+
+If the sum of PEUs of current pattern in all sequences of the database is less than threshold, stop extending that pattern and return
+
+This is because, PEU tells us the maximum utility we can obtain by extending the current pattern. If even this maximum utility is less than the threshold, It is considered a waste of time extending the pattern further.
+
+
+6. EUU pruning:
+This is done after PEU pruning to further reduce the search space.
+
+For every item in the itemset, calculate EUU of current pattern extended with that item.
+
+If the calculated EUU with an item is less than threshold, that item can safely be discarded as the resulting pattern by adding that item can not be a HUSP
+
+This is because, EUU, by its very definition, gives the maximum utility we can obtain by extending the pattern starting with a SPECIFIC item. 
+
+This is not the same as PEU, as in the PEU we get the maximum utility by extending the pattern with ANY item(s)
+
+
+7. RSU pruning:
+By checking the RSU of the pattern with an item, we can know if the actual extended pattern is present in the sequence or not.
+
+We should calculate this RSU in all sequences that contains the extended pattern and add all the values to get the RSU of pattern in whole database
+
+For every item with EUU corresponding to that item more than threshold, Calculate the RSU of current pattern extended with that item. If the RSU is less than threshold the item can be safely pruned.
+
+
+8. Pattern extension:
+After pruning all the unpromising patterns, we are left with the patterns that are worth extending and moving further.
+
+For the remaining items after RSU pruning, Extend the current pattern by I or S concatenating it with corresponding item. Calculate the IU List and PEU list and ASU for the extended pattern.
+
+This is where the actual pattern extension is done
+
+
+9. Checking ASU:
+For the new extended pattern, we should calculate its ASU for the whole dataset.
+
+If the ASU of the extended pattern is greater than or equal to threshold, Add that pattern to the HUSPs list
+
+
+10. Recursing:
+We should not stop extending a pattern even though its ASU is less than threshold, as there is a posibility that by extending that pattern with more set of items, We can have more high-utility patterns
+
+Repeat steps 5 to 10 for the extended pattern until all the possible patterns are pruned and there is no possible extension.
+
+11:
+Print all the patterns in HUSPs list to a file
+
+
+We have received these 17 pattern for the utility threshold of 50 on our sample database
+
+bmswebview-2:
